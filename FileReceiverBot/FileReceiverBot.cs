@@ -1,18 +1,19 @@
 ﻿using System.Threading;
+using FileReceiverBot.Interfaces;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 
 namespace FileReceiverBot
 {
-    public class FileReceiverBot
+    public class FileReceiverBot : IFileReceiverBot
     {
         private readonly ITelegramBotClient _botClient;
         private readonly ILogger<FileReceiverBot> _logger;
 
-        public FileReceiverBot(ITelegramBotClient botClient, ILogger<FileReceiverBot> logger)
+        public FileReceiverBot(IFileReceiverBotClient botClient, ILogger<FileReceiverBot> logger)
         {
-            _botClient = botClient;
+            _botClient = botClient.BotClient;
             _logger = logger;
         }
 
