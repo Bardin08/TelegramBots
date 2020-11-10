@@ -15,7 +15,7 @@ namespace FileReceiverBot.FileReceivingStates
 
             var buttons = new List<List<InlineKeyboardButton>>();
 
-            var labels = new List<string> { "TL-1", "TL-2" };
+            var labels = new List<string> { "КДМ Лабораторная работа №3" };
 
             foreach (var label in labels)
             {
