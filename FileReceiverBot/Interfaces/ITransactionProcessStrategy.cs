@@ -6,6 +6,6 @@ namespace FileReceiverBot.Interfaces
 {
     public interface ITransactionProcessStrategy
     {
-        public void ProcessTransaction(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient);
+        public void ProcessTransaction(Message message, object transaction, ITelegramBotClient botClient);
     }
 }

@@ -7,9 +7,11 @@ namespace FileReceiverBot.TransactionProcessStrategies
 {
     public class FileReceiptProcessingStrategy : ITransactionProcessStrategy
     {
-        public void ProcessTransaction(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
+        public void ProcessTransaction(Message message, object transaction, ITelegramBotClient botClient)
         {
-            transaction.TransactionState.ProcessTransaction(message, transaction, botClient);
+
+            (transaction as FileReceivingTransaction)?.TransactionState
+                .ProcessTransaction(message, (FileReceivingTransaction)transaction, botClient);
         }
     }
 }

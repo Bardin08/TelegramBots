@@ -11,7 +11,7 @@ namespace FileReceiverBot
 
         public void Process(Message message, object transaction, ITelegramBotClient botClient)
         {
-            ProcessStrategy.ProcessTransaction(message, transaction as FileReceivingTransaction, botClient);
+            ProcessStrategy.ProcessTransaction(message, transaction, botClient);
         }
     }
 }
