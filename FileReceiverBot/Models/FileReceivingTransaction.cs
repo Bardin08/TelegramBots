@@ -3,7 +3,7 @@ using FileReceiverBot.Interfaces;
 
 namespace FileReceiverBot.Models
 {
-    public class FileReceivingTransaction : TransactionBase
+    internal class FileReceivingTransaction : TransactionBase
     {
         public FileReceivingTransaction(int recepientId)
         {

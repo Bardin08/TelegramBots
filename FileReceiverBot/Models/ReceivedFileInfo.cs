@@ -1,6 +1,6 @@
 ﻿namespace FileReceiverBot.Models
 {
-    public class ReceivedFileInfo
+    internal class ReceivedFileInfo
     {
         public string Id { get; set; }
         public string Name { get; set; }

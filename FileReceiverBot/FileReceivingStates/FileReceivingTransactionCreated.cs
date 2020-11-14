@@ -7,7 +7,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace FileReceiverBot.FileReceivingStates
 {
-    class FileReceivingTransactionCreated : IFileReceivingTransactionState
+    internal class FileReceivingTransactionCreated : IFileReceivingTransactionState
     {
         public async void ProcessTransaction(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
         {

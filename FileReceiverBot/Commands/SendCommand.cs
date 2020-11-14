@@ -5,7 +5,7 @@ using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Commands
 {
-    public class SendCommand : IFileReceiverBotCommand
+    internal class SendCommand : IFileReceiverBotCommand
     {
         public delegate void FileReceivingTransactionEvent(FileReceivingTransaction transaction);
         public static event FileReceivingTransactionEvent TransactionInitiated;

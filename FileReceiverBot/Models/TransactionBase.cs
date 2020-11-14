@@ -2,7 +2,7 @@
 
 namespace FileReceiverBot.Models
 {
-    public class TransactionBase
+    internal class TransactionBase
     {
         public TransactionBase()
         {

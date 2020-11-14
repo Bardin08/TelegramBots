@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Interfaces
 {
-    public interface IFileReceiverBotCommand
+    internal interface IFileReceiverBotCommand
     {
         public string Name { get; }
 

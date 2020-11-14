@@ -9,7 +9,7 @@ using Telegram.Bot.Types;
 
 namespace FileReceiverBot.TransactionProcessStrategies
 {
-    public class CommandProcessingStrategy : ITransactionProcessStrategy
+    internal class CommandProcessingStrategy : ITransactionProcessStrategy
     {
         public async void ProcessTransaction(Message message, object transaction, ITelegramBotClient botClient)
         {

@@ -5,7 +5,7 @@ using Telegram.Bot.Types;
 
 namespace FileReceiverBot
 {
-    public class TransactionsProcessor
+    internal class TransactionsProcessor
     {
         public ITransactionProcessStrategy ProcessStrategy { get; set; }
 

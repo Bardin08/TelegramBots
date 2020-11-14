@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Interfaces
 {
-    public interface ITransactionProcessStrategy
+    internal interface ITransactionProcessStrategy
     {
         public void ProcessTransaction(Message message, object transaction, ITelegramBotClient botClient);
     }

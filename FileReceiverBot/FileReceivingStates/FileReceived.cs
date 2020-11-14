@@ -6,7 +6,7 @@ using Telegram.Bot.Types;
 
 namespace FileReceiverBot.FileReceivingStates
 {
-    public class FileReceived : IFileReceivingTransactionState
+    internal class FileReceived : IFileReceivingTransactionState
     {
         public async void ProcessTransaction(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
         {
