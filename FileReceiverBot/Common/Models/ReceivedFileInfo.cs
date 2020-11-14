@@ -1,4 +1,4 @@
-﻿namespace FileReceiverBot.Models
+﻿namespace FileReceiverBot.Common.Models
 {
     internal class ReceivedFileInfo
     {

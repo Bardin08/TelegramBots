@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using FileReceiverBot.Commands;
-using FileReceiverBot.Interfaces;
-using FileReceiverBot.Models;
-using FileReceiverBot.TransactionProcessStrategies;
+using FileReceiverBot.Common.Behavior.TransactionProcessStrategies;
+using FileReceiverBot.Common.Interfaces;
+using FileReceiverBot.Common.Models;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Args;

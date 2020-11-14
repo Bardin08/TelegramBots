@@ -1,4 +1,4 @@
-﻿namespace FileReceiverBot.Interfaces
+﻿namespace FileReceiverBot.Common.Interfaces
 {
     public interface IFileReceiverBot
     {

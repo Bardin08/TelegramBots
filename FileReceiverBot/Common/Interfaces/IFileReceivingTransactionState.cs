@@ -1,8 +1,8 @@
-﻿using FileReceiverBot.Models;
+﻿using FileReceiverBot.Common.Models;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace FileReceiverBot.Interfaces
+namespace FileReceiverBot.Common.Interfaces
 {
     internal interface IFileReceivingTransactionState
     {

@@ -1,6 +1,6 @@
 ﻿using Telegram.Bot;
 
-namespace FileReceiverBot.Interfaces
+namespace FileReceiverBot.Common.Interfaces
 {
     public interface IFileReceiverBotClient
     {

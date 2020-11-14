@@ -1,10 +1,10 @@
 ﻿using System.IO;
-using FileReceiverBot.Interfaces;
-using FileReceiverBot.Models;
+using FileReceiverBot.Common.Interfaces;
+using FileReceiverBot.Common.Models;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace FileReceiverBot.FileReceivingStates
+namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
     internal class FileReceived : IFileReceivingTransactionState
     {

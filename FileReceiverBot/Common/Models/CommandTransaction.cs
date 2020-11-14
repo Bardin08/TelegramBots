@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FileReceiverBot.Models
+namespace FileReceiverBot.Common.Models
 {
     internal class CommandTransaction : TransactionBase
     {

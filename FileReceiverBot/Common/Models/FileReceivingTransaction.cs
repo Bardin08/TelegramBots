@@ -1,7 +1,7 @@
-﻿using FileReceiverBot.FileReceivingStates;
-using FileReceiverBot.Interfaces;
+﻿using FileReceiverBot.Common.Interfaces;
+using FileReceiverBot.Common.Behavior.FileReceivingStates;
 
-namespace FileReceiverBot.Models
+namespace FileReceiverBot.Common.Models
 {
     internal class FileReceivingTransaction : TransactionBase
     {

@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using FileReceiverBot.Interfaces;
-using FileReceiverBot.Models;
+﻿using FileReceiverBot.Common.Behavior.FileReceivingStates;
+using FileReceiverBot.Common.Interfaces;
+using FileReceiverBot.Common.Models;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace FileReceiverBot.FileReceivingStates
 {

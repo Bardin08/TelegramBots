@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using FileReceiverBot.Interfaces;
-using FileReceiverBot.Models;
+using FileReceiverBot.Common.Interfaces;
+using FileReceiverBot.Common.Models;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace FileReceiverBot.FileReceivingStates
+namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
     internal class FileTypeAsked : IFileReceivingTransactionState
     {

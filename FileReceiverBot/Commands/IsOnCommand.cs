@@ -1,5 +1,5 @@
-﻿using FileReceiverBot.Interfaces;
-using FileReceiverBot.Models;
+﻿using FileReceiverBot.Common.Models;
+using FileReceiverBot.Common.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 

@@ -1,4 +1,4 @@
-﻿using FileReceiverBot.Interfaces;
+﻿using FileReceiverBot.Common.Interfaces;
 using Telegram.Bot;
 
 namespace FileReceiverBot
