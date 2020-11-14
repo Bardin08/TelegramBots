@@ -11,7 +11,7 @@ namespace FileReceiverBot.Common.Behavior.TransactionProcessStrategies
         {
 
             (transaction as FileReceivingTransaction)?.TransactionState
-                .ProcessTransaction(message, (FileReceivingTransaction)transaction, botClient);
+                .ProcessTransactionAsync(message, (FileReceivingTransaction)transaction, botClient);
         }
     }
 }

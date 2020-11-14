@@ -7,7 +7,7 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
     internal class FileTypeSelected : IFileReceivingTransactionState
     {
-        public async void ProcessTransaction(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
+        public async void ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
         {
             transaction.MessageIds.ForEach(async m => await botClient.DeleteMessageAsync(transaction.RecepientId, m));
             transaction.MessageIds.Clear();
@@ -27,12 +27,12 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
             {
                 await botClient.SendTextMessageAsync(transaction.RecepientId, "Ошибка распознования типа работы.");
                 transaction.TransactionState = new FileTypeAsked();
-                transaction.TransactionState.ProcessTransaction(message, transaction, botClient);
+                transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient);
                 return;
             }
 
             transaction.TransactionState = new FullNameAsked();
-            transaction.TransactionState.ProcessTransaction(message, transaction, botClient);
+            transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient);
         }
     }
 }

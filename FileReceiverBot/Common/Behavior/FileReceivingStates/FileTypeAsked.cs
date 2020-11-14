@@ -9,7 +9,7 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
     internal class FileTypeAsked : IFileReceivingTransactionState
     {
-        public async void ProcessTransaction(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
+        public async void ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
         {
             var buttons = new List<List<InlineKeyboardButton>>
             {

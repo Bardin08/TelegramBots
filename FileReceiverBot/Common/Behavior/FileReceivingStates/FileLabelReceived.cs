@@ -8,7 +8,7 @@ namespace FileReceiverBot.FileReceivingStates
 {
     internal class FileLabelReceived : IFileReceivingTransactionState
     {
-        public async void ProcessTransaction(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
+        public async void ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
         {
             transaction.MessageIds.ForEach(async m => await botClient.DeleteMessageAsync(transaction.RecepientId, m));
             transaction.MessageIds.Clear();
@@ -21,12 +21,12 @@ namespace FileReceiverBot.FileReceivingStates
             {
                 await botClient.SendTextMessageAsync(transaction.RecepientId, "Ошибка распознования метки.");
                 transaction.TransactionState = new FileReceivingTransactionCreated();
-                transaction.TransactionState.ProcessTransaction(message, transaction, botClient);
+                transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient);
                 return;
             }
 
             transaction.TransactionState = new FileTypeAsked();
-            transaction.TransactionState.ProcessTransaction(message, transaction, botClient);
+            transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient);
         }
     }
 }

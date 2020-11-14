@@ -7,7 +7,7 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
     internal class FileAsked : IFileReceivingTransactionState
     {
-        public async void ProcessTransaction(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
+        public async void ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
         {
             await botClient.SendTextMessageAsync(transaction.RecepientId, "Отправь мне файл, который нужно сохранить.");
 

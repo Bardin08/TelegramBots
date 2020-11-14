@@ -8,14 +8,14 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
     internal class FileReceived : IFileReceivingTransactionState
     {
-        public async void ProcessTransaction(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
+        public async void ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
         {
             if (message.Document == null)
             {
                 await botClient.SendTextMessageAsync(transaction.RecepientId, "Сообщение не содержит документа.");
 
                 transaction.TransactionState = new FileAsked();
-                transaction.TransactionState.ProcessTransaction(message, transaction, botClient);
+                transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient);
                 return;
             }
 
