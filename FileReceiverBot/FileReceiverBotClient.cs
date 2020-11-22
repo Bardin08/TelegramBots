@@ -5,10 +5,7 @@ namespace FileReceiverBot
 {
     public class FileReceiverBotClient : IFileReceiverBotClient
     {
-        public ITelegramBotClient BotClient
-        {
-            get;
-        }
+        public ITelegramBotClient BotClient { get; }
 
         public FileReceiverBotClient(string token)
         {
