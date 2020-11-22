@@ -21,7 +21,7 @@ namespace BotController
                 .CreateLogger();
 
             var host = Host.CreateDefaultBuilder()
-                .ConfigureServices((context, services) =>
+                .ConfigureServices((_, services) =>
                 {
                     services.AddSingleton<IFileReceiverBotClient>(new FileReceiverBotClient(builder.Build()["Bots:FileReceiver:Token"]));
                     services.AddSingleton<IFileReceiverBot, FileReceiverBot.FileReceiverBot>();

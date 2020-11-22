@@ -9,4 +9,19 @@
     <PackageReference Include="Telegram.Bot" Version="15.7.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="FileReceiverDictionary.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileReceiverDictionary.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="FileReceiverDictionary.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileReceiverDictionary.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>
