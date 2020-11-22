@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
+using FileReceiverBot;
+using FileReceiverBot.Common.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
@@ -18,18 +21,23 @@ namespace BotController
                 .CreateLogger();
 
             var host = Host.CreateDefaultBuilder()
-                .ConfigureServices((context, services) =>
+                .ConfigureServices((_, services) =>
                 {
-                    // ... Register services here ...
-                });
+                    services.AddSingleton<IFileReceiverBotClient>(new FileReceiverBotClient(builder.Build()["Bots:FileReceiver:Token"]));
+                    services.AddSingleton<IFileReceiverBot, FileReceiverBot.FileReceiverBot>();
+                })
+                .UseSerilog()
+                .Build();
 
-            // ... Create and execute here ...
+
+            var bot = ActivatorUtilities.CreateInstance<FileReceiverBot.FileReceiverBot>(host.Services);
+            bot.Execute();
         }
 
         private static void BuildConfig(ConfigurationBuilder builder)
         {
             builder.SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
