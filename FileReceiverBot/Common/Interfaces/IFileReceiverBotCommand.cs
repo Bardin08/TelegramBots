@@ -1,10 +1,10 @@
-﻿using FileReceiverBot.Models;
+﻿using FileReceiverBot.Common.Models;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace FileReceiverBot.Interfaces
+namespace FileReceiverBot.Common.Interfaces
 {
-    public interface IFileReceiverBotCommand
+    internal interface IFileReceiverBotCommand
     {
         public string Name { get; }
 

@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using FileReceiverBot.Interfaces;
-using FileReceiverBot.Models;
+using FileReceiverBot.Common.Interfaces;
+using FileReceiverBot.Common.Models;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace FileReceiverBot.TransactionProcessStrategies
+namespace FileReceiverBot.Common.Behavior.TransactionProcessStrategies
 {
-    public class CommandProcessingStrategy : ITransactionProcessStrategy
+    internal class CommandProcessingStrategy : ITransactionProcessStrategy
     {
         public async void ProcessTransaction(Message message, object transaction, ITelegramBotClient botClient)
         {

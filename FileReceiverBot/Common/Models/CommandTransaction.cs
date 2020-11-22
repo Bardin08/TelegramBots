@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace FileReceiverBot.Models
+namespace FileReceiverBot.Common.Models
 {
-    public class CommandTransaction : TransactionBase
+    internal class CommandTransaction : TransactionBase
     {
         public CommandTransaction(int transactionId)
         {

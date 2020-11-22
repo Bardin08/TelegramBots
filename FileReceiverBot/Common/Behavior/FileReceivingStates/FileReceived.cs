@@ -1,21 +1,21 @@
 ﻿using System.IO;
-using FileReceiverBot.Interfaces;
-using FileReceiverBot.Models;
+using FileReceiverBot.Common.Interfaces;
+using FileReceiverBot.Common.Models;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace FileReceiverBot.FileReceivingStates
+namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
-    public class FileReceived : IFileReceivingTransactionState
+    internal class FileReceived : IFileReceivingTransactionState
     {
-        public async void ProcessTransaction(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
+        public async void ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
         {
             if (message.Document == null)
             {
-                await botClient.SendTextMessageAsync(transaction.RecepientId, "Сообщение не содержит документа.");
+                await botClient.SendTextMessageAsync(transaction.RecepientId, "❌Сообщение не содержит документа.");
 
                 transaction.TransactionState = new FileAsked();
-                transaction.TransactionState.ProcessTransaction(message, transaction, botClient);
+                transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient);
                 return;
             }
 
@@ -32,7 +32,7 @@ namespace FileReceiverBot.FileReceivingStates
             await botClient.GetInfoAndDownloadFileAsync(transaction.FileInfo.Id, fs);
             fs.Dispose();
 
-            await botClient.SendTextMessageAsync(transaction.RecepientId, "Файл сохранен!");
+            await botClient.SendTextMessageAsync(transaction.RecepientId, "✅Файл сохранен!");
             transaction.IsComplete = true;
         }
     }

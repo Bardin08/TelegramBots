@@ -1,12 +1,11 @@
 ﻿using System;
 using System.IO;
 using FileReceiverBot;
-using FileReceiverBot.Interfaces;
+using FileReceiverBot.Common.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Telegram.Bot;
 
 namespace BotController
 {
@@ -22,7 +21,7 @@ namespace BotController
                 .CreateLogger();
 
             var host = Host.CreateDefaultBuilder()
-                .ConfigureServices((context, services) =>
+                .ConfigureServices((_, services) =>
                 {
                     services.AddSingleton<IFileReceiverBotClient>(new FileReceiverBotClient(builder.Build()["Bots:FileReceiver:Token"]));
                     services.AddSingleton<IFileReceiverBot, FileReceiverBot.FileReceiverBot>();

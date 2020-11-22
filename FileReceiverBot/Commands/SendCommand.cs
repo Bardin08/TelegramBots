@@ -1,11 +1,11 @@
-﻿using FileReceiverBot.Interfaces;
-using FileReceiverBot.Models;
+﻿using FileReceiverBot.Common.Interfaces;
+using FileReceiverBot.Common.Models;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Commands
 {
-    public class SendCommand : IFileReceiverBotCommand
+    internal class SendCommand : IFileReceiverBotCommand
     {
         public delegate void FileReceivingTransactionEvent(FileReceivingTransaction transaction);
         public static event FileReceivingTransactionEvent TransactionInitiated;

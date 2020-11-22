@@ -1,10 +1,9 @@
-﻿using FileReceiverBot.Models;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace FileReceiverBot.Interfaces
+namespace FileReceiverBot.Common.Interfaces
 {
-    public interface ITransactionProcessStrategy
+    internal interface ITransactionProcessStrategy
     {
         public void ProcessTransaction(Message message, object transaction, ITelegramBotClient botClient);
     }

@@ -1,13 +1,13 @@
-﻿using FileReceiverBot.Interfaces;
-using FileReceiverBot.Models;
+﻿using FileReceiverBot.Common.Interfaces;
+using FileReceiverBot.Common.Models;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace FileReceiverBot.FileReceivingStates
+namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
-    class FileTypeSelected : IFileReceivingTransactionState
+    internal class WorkTypeSelected : IFileReceivingTransactionState
     {
-        public async void ProcessTransaction(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
+        public async void ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
         {
             transaction.MessageIds.ForEach(async m => await botClient.DeleteMessageAsync(transaction.RecepientId, m));
             transaction.MessageIds.Clear();
@@ -26,13 +26,13 @@ namespace FileReceiverBot.FileReceivingStates
             else
             {
                 await botClient.SendTextMessageAsync(transaction.RecepientId, "Ошибка распознования типа работы.");
-                transaction.TransactionState = new FileTypeAsked();
-                transaction.TransactionState.ProcessTransaction(message, transaction, botClient);
+                transaction.TransactionState = new WorkTypeAsked();
+                transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient);
                 return;
             }
 
             transaction.TransactionState = new FullNameAsked();
-            transaction.TransactionState.ProcessTransaction(message, transaction, botClient);
+            transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient);
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace FileReceiverBot.Models
+namespace FileReceiverBot.Common.Models
 {
-    public class TransactionBase
+    internal class TransactionBase
     {
         public TransactionBase()
         {
