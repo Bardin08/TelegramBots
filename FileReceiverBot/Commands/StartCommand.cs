@@ -11,8 +11,12 @@ namespace FileReceiverBot.Commands
 
         public async void Execute(Message message, CommandTransaction transaction, ITelegramBotClient botClient)
         {
-            await botClient.SendTextMessageAsync((transaction as CommandTransaction).RecepientId, "Этот бот предназначен для сохранения файлов. Для отправки файлов воспользуйся командой /send");
-            (transaction as CommandTransaction).IsComplete = true;
+            await botClient.SendTextMessageAsync(transaction.RecepientId, @"Привет! Я бот получения файлов студентов группы ІТ-01.
+Через меня можно сдать свои работы.
+
+❓Для получения дальнейшей информации нажми /help
+✉️ Если у тебя есть предложения или пожелания - пиши @bardin_vlad");
+            transaction.IsComplete = true;
         }
     }
 }

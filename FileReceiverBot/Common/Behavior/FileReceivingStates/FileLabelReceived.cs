@@ -19,13 +19,13 @@ namespace FileReceiverBot.FileReceivingStates
             }
             else
             {
-                await botClient.SendTextMessageAsync(transaction.RecepientId, "Ошибка распознования метки.");
+                await botClient.SendTextMessageAsync(transaction.RecepientId, "⚠️Ошибка распознования метки.");
                 transaction.TransactionState = new FileReceivingTransactionCreated();
                 transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient);
                 return;
             }
 
-            transaction.TransactionState = new FileTypeAsked();
+            transaction.TransactionState = new WorkTypeAsked();
             transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient);
         }
     }

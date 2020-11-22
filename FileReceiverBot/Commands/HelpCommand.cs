@@ -11,7 +11,8 @@ namespace FileReceiverBot.Commands
 
         public async void Execute(Message message, CommandTransaction transaction, ITelegramBotClient botClient)
         {
-            await botClient.SendTextMessageAsync(transaction.RecepientId, "Help text here!");
+            await botClient.SendTextMessageAsync(transaction.RecepientId, @"🔔 Чтобы проверить, включен ли я, используй команду /ison.
+📨 Для отправки файла используй команду /send.");
             transaction.IsComplete = true;
         }
     }

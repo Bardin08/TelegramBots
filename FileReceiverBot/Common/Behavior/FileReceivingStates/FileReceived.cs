@@ -12,7 +12,7 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
         {
             if (message.Document == null)
             {
-                await botClient.SendTextMessageAsync(transaction.RecepientId, "Сообщение не содержит документа.");
+                await botClient.SendTextMessageAsync(transaction.RecepientId, "❌Сообщение не содержит документа.");
 
                 transaction.TransactionState = new FileAsked();
                 transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient);
@@ -32,7 +32,7 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
             await botClient.GetInfoAndDownloadFileAsync(transaction.FileInfo.Id, fs);
             fs.Dispose();
 
-            await botClient.SendTextMessageAsync(transaction.RecepientId, "Файл сохранен!");
+            await botClient.SendTextMessageAsync(transaction.RecepientId, "✅Файл сохранен!");
             transaction.IsComplete = true;
         }
     }
