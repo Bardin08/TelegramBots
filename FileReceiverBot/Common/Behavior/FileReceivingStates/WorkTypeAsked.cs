@@ -7,14 +7,14 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
-    internal class FileTypeAsked : IFileReceivingTransactionState
+    internal class WorkTypeAsked : IFileReceivingTransactionState
     {
         public async void ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
         {
             var buttons = new List<List<InlineKeyboardButton>>
             {
-                new List<InlineKeyboardButton> { InlineKeyboardButton.WithCallbackData("Личная", "0") },
-                new List<InlineKeyboardButton> { InlineKeyboardButton.WithCallbackData("Командная", "1") }
+                new List<InlineKeyboardButton> { InlineKeyboardButton.WithCallbackData("Личная👨‍🎓", "0") },
+                new List<InlineKeyboardButton> { InlineKeyboardButton.WithCallbackData("Командная👨‍🎓👩‍🎓", "1") }
             };
 
             var keyboard = new InlineKeyboardMarkup(buttons.ToArray());
@@ -22,7 +22,7 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
             var sentMessage = await botClient.SendTextMessageAsync(transaction.RecepientId, "Отлично, теперь выбери тип работы", replyMarkup: keyboard);
 
             transaction.MessageIds.Add(sentMessage.MessageId);
-            transaction.TransactionState = new FileTypeSelected();
+            transaction.TransactionState = new WorkTypeSelected();
         }
     }
 }

@@ -5,7 +5,7 @@ using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
-    internal class FileTypeSelected : IFileReceivingTransactionState
+    internal class WorkTypeSelected : IFileReceivingTransactionState
     {
         public async void ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
         {
@@ -26,7 +26,7 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
             else
             {
                 await botClient.SendTextMessageAsync(transaction.RecepientId, "Ошибка распознования типа работы.");
-                transaction.TransactionState = new FileTypeAsked();
+                transaction.TransactionState = new WorkTypeAsked();
                 transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient);
                 return;
             }
