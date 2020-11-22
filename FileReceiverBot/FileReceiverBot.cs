@@ -86,14 +86,14 @@ namespace FileReceiverBot
 
             object userTransaction = _transactions.Find(transaction => (transaction as TransactionBase)?.RecepientId == message.From.Id);
 
-            if (userTransaction != null)
-            {
-                _transactionsProcessor.ProcessStrategy = SelectStrategy(userTransaction as TransactionBase);
-            }
-            else if (message.Text?.StartsWith("/") == true)
+            if (message.Text?.StartsWith("/") == true)
             {
                 _transactionsProcessor.ProcessStrategy = new CommandProcessingStrategy();
                 userTransaction = new CommandTransaction(message.From.Id);
+            }
+            else if (userTransaction != null)
+            {
+                _transactionsProcessor.ProcessStrategy = SelectStrategy(userTransaction as TransactionBase);
             }
 
             _transactionsProcessor.Process(message, userTransaction, _botClient);
