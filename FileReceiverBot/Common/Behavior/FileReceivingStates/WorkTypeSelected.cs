@@ -1,5 +1,8 @@
-﻿using FileReceiverBot.Common.Interfaces;
+﻿using System;
+using System.Threading.Tasks;
+using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
+using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -7,7 +10,7 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
     internal class WorkTypeSelected : IFileReceivingTransactionState
     {
-        public async void ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
+        public async Task ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient, ILogger logger)
         {
             transaction.MessageIds.ForEach(async m => await botClient.DeleteMessageAsync(transaction.RecepientId, m));
             transaction.MessageIds.Clear();
@@ -25,14 +28,28 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
             }
             else
             {
-                await botClient.SendTextMessageAsync(transaction.RecepientId, "Ошибка распознования типа работы.");
+                try
+                {
+                    var sentMessage = await botClient.SendTextMessageAsync(transaction.RecepientId, "Ошибка распознования типа работы.");
+
+                    if (sentMessage != null)
+                    {
+                        logger.LogDebug("User {username}({id}) sent incorrect work type.", transaction.Username, transaction.RecepientId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError("Message wasn`t sent. Error: {error}", ex.Message);
+                }
+
+
                 transaction.TransactionState = new WorkTypeAsked();
-                transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient);
+                await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
                 return;
             }
 
             transaction.TransactionState = new FullNameAsked();
-            transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient);
+            await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
         }
     }
 }

@@ -1,6 +1,9 @@
-﻿using FileReceiverBot.Common.Behavior.FileReceivingStates;
+﻿using System;
+using System.Threading.Tasks;
+using FileReceiverBot.Common.Behavior.FileReceivingStates;
 using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
+using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -8,7 +11,7 @@ namespace FileReceiverBot.FileReceivingStates
 {
     internal class FileLabelReceived : IFileReceivingTransactionState
     {
-        public async void ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
+        public async Task ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient, ILogger logger)
         {
             transaction.MessageIds.ForEach(async m => await botClient.DeleteMessageAsync(transaction.RecepientId, m));
             transaction.MessageIds.Clear();
@@ -19,14 +22,28 @@ namespace FileReceiverBot.FileReceivingStates
             }
             else
             {
-                await botClient.SendTextMessageAsync(transaction.RecepientId, "⚠️Ошибка распознования метки.");
+                try
+                {
+                    var sentMessage = await botClient.SendTextMessageAsync(transaction.RecepientId, "⚠️Ошибка распознования метки.");
+
+                    if (sentMessage != null)
+                    {
+                        logger.LogDebug("User ({username}({id})) sent a wrong file label.", transaction.Username, transaction.RecepientId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError("Message wasn`t sent. Error: {error}", ex.Message);
+                }
+
                 transaction.TransactionState = new FileReceivingTransactionCreated();
-                transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient);
+                await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
                 return;
             }
 
+            logger.LogInformation("File label: {label} received from {username}({id})", message.Text, transaction.Username, transaction.RecepientId);
             transaction.TransactionState = new WorkTypeAsked();
-            transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient);
+            await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
         }
     }
 }

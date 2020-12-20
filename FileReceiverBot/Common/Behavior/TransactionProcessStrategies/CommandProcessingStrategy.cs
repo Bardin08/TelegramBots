@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
+using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -11,7 +12,7 @@ namespace FileReceiverBot.Common.Behavior.TransactionProcessStrategies
 {
     internal class CommandProcessingStrategy : ITransactionProcessStrategy
     {
-        public async void ProcessTransaction(Message message, object transaction, ITelegramBotClient botClient)
+        public async void ProcessTransaction(Message message, object transaction, ITelegramBotClient botClient, ILogger logger)
         {
             if (message.Text == null)
             {

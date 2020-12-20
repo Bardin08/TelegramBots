@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
 using FileReceiverBot.FileReceivingStates;
+using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -12,8 +15,10 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
     class AskedFileLabel : IFileReceivingTransactionState
     {
-        public async void ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient)
+        public async Task ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient, ILogger logger)
         {
+            logger.LogDebug("File label request initialized for user {username}({id})", transaction.Username, transaction.RecepientId);
+
             var buttons = new List<List<InlineKeyboardButton>>();
 
             foreach (var label in LoadFileLabels())
@@ -27,10 +32,22 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 
             var keyboard = new InlineKeyboardMarkup(buttons.ToArray());
 
-            var sentMessage = await botClient.SendTextMessageAsync(transaction.RecepientId, "🔖Выбери метку работы, которую хочешь сдать", replyMarkup: keyboard);
+            try
+            {
+                var sentMessage = await botClient.SendTextMessageAsync(transaction.RecepientId, "🔖Выбери метку работы, которую хочешь сдать", replyMarkup: keyboard);
 
-            transaction.MessageIds.Add(sentMessage.MessageId);
-            transaction.TransactionState = new FileLabelReceived();
+                transaction.MessageIds.Add(sentMessage.MessageId);
+                transaction.TransactionState = new FileLabelReceived();
+
+                if (sentMessage != null)
+                {
+                    logger.LogDebug("The file tag is requested from the user {username}({id})", transaction.Username, transaction.RecepientId);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Message wasn`t sent. Error: {error}", ex.Message);
+            }
         }
 
         private List<string> LoadFileLabels()
