@@ -15,18 +15,18 @@ namespace FileReceiverBot
     public class FileReceiverBot : IFileReceiverBot
     {
         private readonly ITelegramBotClient _botClient;
-        private readonly ILogger<FileReceiverBot> _logger;
+        private readonly ILogger _logger;
 
         private readonly TransactionsProcessor _transactionsProcessor;
 
-        private List<object> _transactions;
+        private readonly HashSet<object> _transactions;
 
         public FileReceiverBot(IFileReceiverBotClient botClient, ILogger<FileReceiverBot> logger)
         {
             _botClient = botClient.BotClient;
             _logger = logger;
 
-            _transactions = new List<object>();
+            _transactions = new HashSet<object>();
             _transactionsProcessor = new TransactionsProcessor();
         }
 
@@ -55,7 +55,7 @@ namespace FileReceiverBot
             }
 
             _transactionsProcessor.ProcessStrategy = new FileReceiptProcessingStrategy();
-            _transactionsProcessor.Process(new Message(), transaction, _botClient);
+            _transactionsProcessor.Process(new Message(), transaction, _botClient, _logger);
         }
 
         private void CallbackQueryReceived(object sender, CallbackQueryEventArgs e)
@@ -84,7 +84,7 @@ namespace FileReceiverBot
                 message.From.Id,
                 DateTime.Now.ToString());
 
-            object userTransaction = _transactions.Find(transaction => (transaction as TransactionBase)?.RecepientId == message.From.Id);
+            _transactions.TryGetValue(new TransactionBase() { TransactionId = message.From.Id }, out object userTransaction);
 
             if (message.Text?.StartsWith("/") == true)
             {
@@ -96,14 +96,12 @@ namespace FileReceiverBot
                 _transactionsProcessor.ProcessStrategy = SelectStrategy(userTransaction as TransactionBase);
             }
 
-            _transactionsProcessor.Process(message, userTransaction, _botClient);
+            _transactionsProcessor.Process(message, userTransaction, _botClient, _logger);
         }
 
         private void DeleteCompleteTransactions()
         {
-            var itemsRemove = _transactions.RemoveAll(x => (x as TransactionBase)?.IsComplete ?? false);
-
-            _logger.LogInformation("Remove {n} complete transactions.", itemsRemove);
+            _transactions.RemoveWhere(t => ((TransactionBase)t).IsComplete);
         }
 
         private ITransactionProcessStrategy SelectStrategy(TransactionBase transaction)
