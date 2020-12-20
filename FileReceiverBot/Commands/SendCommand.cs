@@ -15,7 +15,7 @@ namespace FileReceiverBot.Commands
         public void Execute(Message message, CommandTransaction transaction, ITelegramBotClient botClient)
         {
             transaction.IsComplete = true;
-            TransactionInitiated?.Invoke(new FileReceivingTransaction(transaction.RecepientId));
+            TransactionInitiated?.Invoke(new FileReceivingTransaction(transaction.RecepientId) { Username = message.From.Username });
         }
     }
 }
