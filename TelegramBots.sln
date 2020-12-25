@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30517.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotController", "BotController\BotController.csproj", "{479179DF-83EC-465F-81B6-72BD46BF5972}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotController", "BotController\BotController.csproj", "{479179DF-83EC-465F-81B6-72BD46BF5972}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileReceiverBot", "FileReceiverBot\FileReceiverBot.csproj", "{18D02646-19DF-422F-8153-A543320A3B09}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileReceiverBot", "FileReceiverBot\FileReceiverBot.csproj", "{18D02646-19DF-422F-8153-A543320A3B09}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
