@@ -18,5 +18,14 @@ namespace FileReceiverBot.Common.Models
         public string SenderFullName { get; set; }
         public ReceivedFileInfo FileInfo { get; set; }
         public IFileReceivingTransactionState TransactionState { get; set; }
+
+        public override string ToString()
+        {
+            return "File Receiving Transaction:\n\t" +
+                $"User: {SenderFullName}({Username}({RecepientId}))\n\t" +
+                $"Transaction state: {TransactionState.GetType().Name}\n\t" +
+                $"Work type: {(IsTeam ? "Team" : "Personal")}\n\t" +
+                $"File info: {FileInfo}";
+        }
     }
 }

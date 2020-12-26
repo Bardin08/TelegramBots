@@ -45,25 +45,17 @@ namespace FileReceiverBot
 
         private void FileReceivingTransactionInitiated(FileReceivingTransaction transaction)
         {
-            _logger.LogInformation("New file receiving transaction initiated by user {id} at {timestamp}.",
-                transaction.RecepientId,
-                DateTime.Now.ToString());
-
             if (transaction != null)
             {
                 _transactions.Add(transaction);
             }
 
-            _transactionsProcessor.ProcessStrategy = new FileReceiptProcessingStrategy();
+            _transactionsProcessor.ProcessStrategy = new FileReceivingStrategy();
             _transactionsProcessor.Process(new Message(), transaction, _botClient, _logger);
         }
 
         private void CallbackQueryReceived(object sender, CallbackQueryEventArgs e)
         {
-            _logger.LogDebug("Callback query received from {id} at {timestamt}.",
-                e.CallbackQuery.Message.Chat.Id,
-                DateTime.Now.ToString());
-
             var message = e.CallbackQuery.Message;
             message.Text = e.CallbackQuery.Data;
             message.From.Id = (int)message.Chat.Id;
@@ -80,20 +72,18 @@ namespace FileReceiverBot
 
         private void ProcessMessage(Message message)
         {
-            _logger.LogDebug("Received message from {id} at {timestamp}.",
-                message.From.Id,
-                DateTime.Now.ToString());
-
             _transactions.TryGetValue(new TransactionBase() { TransactionId = message.From.Id }, out object userTransaction);
 
             if (message.Text?.StartsWith("/") == true)
             {
+                _transactions.RemoveWhere(t => ((TransactionBase)t).TransactionId == message.From.Id);
+
                 _transactionsProcessor.ProcessStrategy = new CommandProcessingStrategy();
                 userTransaction = new CommandTransaction(message.From.Id);
             }
             else if (userTransaction != null)
             {
-                _transactionsProcessor.ProcessStrategy = SelectStrategy(userTransaction as TransactionBase);
+                _transactionsProcessor.ProcessStrategy = SelectTransactionProcessingStrategy(userTransaction as TransactionBase);
             }
 
             _transactionsProcessor.Process(message, userTransaction, _botClient, _logger);
@@ -104,11 +94,11 @@ namespace FileReceiverBot
             _transactions.RemoveWhere(t => ((TransactionBase)t).IsComplete);
         }
 
-        private ITransactionProcessStrategy SelectStrategy(TransactionBase transaction)
+        private ITransactionProcessStrategy SelectTransactionProcessingStrategy(TransactionBase transaction)
         {
             if (transaction.TransactionType == "FileReceiving")
             {
-                return new FileReceiptProcessingStrategy();
+                return new FileReceivingStrategy();
             }
 
             return null;

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using FileReceiverBot.Common.Behavior.FileReceivingStates;
 using FileReceiverBot.Common.Interfaces;
@@ -18,7 +20,19 @@ namespace FileReceiverBot.FileReceivingStates
 
             if (message.Text != null)
             {
-                transaction.FileInfo.Label = message.Text;
+                if (LoadFileLabels().Contains(message.Text))
+                {
+                    transaction.FileInfo.Label = message.Text;               
+
+                    logger.LogInformation("File label: {label} received from {username}({id})", message.Text, transaction.Username, transaction.RecepientId);
+                    transaction.TransactionState = new WorkTypeAsked();
+                    await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
+                }
+                else
+                {
+                    await botClient.SendTextMessageAsync(transaction.RecepientId, $"Метки *{message.Text}* нет в списке доступных меток. Для выбора правильной метки используй кнопки!");
+                    BackToLabelSelection(message, transaction, botClient, logger);
+                }
             }
             else
             {
@@ -36,14 +50,33 @@ namespace FileReceiverBot.FileReceivingStates
                     logger.LogError("Message wasn`t sent. Error: {error}", ex.Message);
                 }
 
-                transaction.TransactionState = new FileReceivingTransactionCreated();
-                await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
-                return;
+                BackToLabelSelection(message, transaction, botClient, logger);
             }
-
-            logger.LogInformation("File label: {label} received from {username}({id})", message.Text, transaction.Username, transaction.RecepientId);
-            transaction.TransactionState = new WorkTypeAsked();
+        }
+        
+        private async void BackToLabelSelection(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient, ILogger logger)
+        {
+            transaction.TransactionState = new FileReceivingTransactionCreated();
             await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
+        }
+
+        private List<string> LoadFileLabels()
+        {
+            List<string> labels = new List<string>();
+
+            using (var reader = new StreamReader(BotConstants.LabelsFileFullName, System.Text.Encoding.Unicode))
+            {
+                var line = "";
+
+                while ((line = reader.ReadLine()) != null)
+                {
+                    var firstComaIndex = line.IndexOf(',');
+
+                    labels.Add(line.Substring(0, firstComaIndex));
+                }
+
+                return labels;
+            }
         }
     }
 }

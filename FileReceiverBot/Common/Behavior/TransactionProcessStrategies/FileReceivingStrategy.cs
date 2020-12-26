@@ -6,7 +6,7 @@ using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Common.Behavior.TransactionProcessStrategies
 {
-    internal class FileReceiptProcessingStrategy : ITransactionProcessStrategy
+    internal class FileReceivingStrategy : ITransactionProcessStrategy
     {
         public void ProcessTransaction(Message message, object transaction, ITelegramBotClient botClient, ILogger logger)
         {
