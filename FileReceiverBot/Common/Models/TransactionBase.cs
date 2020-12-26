@@ -7,6 +7,7 @@ namespace FileReceiverBot.Common.Models
         public TransactionBase()
         {
             MessageIds = new List<int>();
+            IsComplete = false;
         }
 
         public bool IsComplete { get; set; }
