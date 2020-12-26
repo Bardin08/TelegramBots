@@ -45,9 +45,6 @@ namespace FileReceiverBot
 
         private void FileReceivingTransactionInitiated(FileReceivingTransaction transaction)
         {
-            _logger.LogDebug("New file receiving transaction initiated by {username}({id}).\n{transaction}",
-                transaction.Username, transaction.RecepientId, transaction);
-
             if (transaction != null)
             {
                 _transactions.Add(transaction);
@@ -59,8 +56,6 @@ namespace FileReceiverBot
 
         private void CallbackQueryReceived(object sender, CallbackQueryEventArgs e)
         {
-            _logger.LogDebug("Received callback query: {callbackQuery}. \n", e.CallbackQuery);
-
             var message = e.CallbackQuery.Message;
             message.Text = e.CallbackQuery.Data;
             message.From.Id = (int)message.Chat.Id;
@@ -77,8 +72,6 @@ namespace FileReceiverBot
 
         private void ProcessMessage(Message message)
         {
-            _logger.LogDebug($"{message}\n");
-
             _transactions.TryGetValue(new TransactionBase() { TransactionId = message.From.Id }, out object userTransaction);
 
             if (message.Text?.StartsWith("/") == true)
