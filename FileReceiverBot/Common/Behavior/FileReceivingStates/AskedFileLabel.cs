@@ -17,8 +17,6 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
     {
         public async Task ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient, ILogger logger)
         {
-            logger.LogDebug("File label request initialized for user {username}({id})", transaction.Username, transaction.RecepientId);
-
             var buttons = new List<List<InlineKeyboardButton>>();
 
             foreach (var label in LoadFileLabels())
@@ -38,11 +36,6 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 
                 transaction.MessageIds.Add(sentMessage.MessageId);
                 transaction.TransactionState = new FileLabelReceived();
-
-                if (sentMessage != null)
-                {
-                    logger.LogDebug("The file tag is requested from the user {username}({id})", transaction.Username, transaction.RecepientId);
-                }
             }
             catch (Exception ex)
             {
@@ -52,12 +45,20 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 
         private List<string> LoadFileLabels()
         {
+            List<string> labels = new List<string>();
+
             using (var reader = new StreamReader(BotConstants.LabelsFileFullName, System.Text.Encoding.Unicode))
             {
-                var labes = reader.ReadToEnd().Split(',').ToList();
-                labes.ForEach(l => l.Trim());
+                var line = "";
 
-                return labes;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    var firstSeparatorIndex = line.IndexOf(',');
+
+                    labels.Add(line.Substring(0, firstSeparatorIndex));
+                }
+
+                return labels;
             }
         }
     }
