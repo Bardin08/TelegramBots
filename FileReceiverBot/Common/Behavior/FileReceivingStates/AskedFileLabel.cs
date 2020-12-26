@@ -53,9 +53,7 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 
                 while ((line = reader.ReadLine()) != null)
                 {
-                    var firstSeparatorIndex = line.IndexOf(',');
-
-                    labels.Add(line.Substring(0, firstSeparatorIndex));
+                    labels.Add(line.Split(';')[0]);
                 }
 
                 return labels;

@@ -70,9 +70,7 @@ namespace FileReceiverBot.FileReceivingStates
 
                 while ((line = reader.ReadLine()) != null)
                 {
-                    var firstComaIndex = line.IndexOf(',');
-
-                    labels.Add(line.Substring(0, firstComaIndex));
+                    labels.Add(line.Split(';')[0]);
                 }
 
                 return labels;
