@@ -38,9 +38,21 @@ namespace FileReceiverBot
             _botClient.OnCallbackQuery += CallbackQueryReceived;
 
             SendCommand.TransactionInitiated += FileReceivingTransactionInitiated;
+            IsSavedCommand.FileCheckTransactionInitiated += FileCheckTransactionInitiated;
 
             _botClient.StartReceiving();
             Thread.Sleep(int.MaxValue);
+        }
+
+        private void FileCheckTransactionInitiated(FileCheckTransaction transaction)
+        {
+            if (transaction != null)
+            {
+                _transactions.Add(transaction);
+            }
+
+            _transactionsProcessor.ProcessStrategy = new FileCheckProcessingStrategy();
+            _transactionsProcessor.Process(new Message(), transaction, _botClient, _logger);
         }
 
         private void FileReceivingTransactionInitiated(FileReceivingTransaction transaction)
@@ -99,6 +111,10 @@ namespace FileReceiverBot
             if (transaction.TransactionType == "FileReceiving")
             {
                 return new FileReceivingStrategy();
+            }
+            if (transaction.TransactionType == "FileCheck")
+            {
+                return new FileCheckProcessingStrategy();
             }
 
             return null;
