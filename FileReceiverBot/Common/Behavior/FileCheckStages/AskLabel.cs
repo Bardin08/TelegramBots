@@ -13,7 +13,7 @@ namespace FileReceiverBot.Common.Behavior.FileCheckStages
 {
     internal class AskLabel : IFileCheckTransactionState
     {
-        public async Task ProcessTransactionAsync(Message message, FileCheckTransaction transaction, ITelegramBotClient botClient, ILogger logger)
+        public async Task ProcessTransactionAsync(FileSavedCheckTransactionModel transaction, ITelegramBotClient botClient, ILogger logger)
         {
             var buttons = new List<List<InlineKeyboardButton>>();
 

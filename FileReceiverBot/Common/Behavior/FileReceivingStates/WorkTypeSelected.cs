@@ -10,18 +10,19 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
     internal class WorkTypeSelected : IFileReceivingTransactionState
     {
-        public async Task ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient, ILogger logger)
+        public async Task ProcessTransactionAsync(FileReceivingTransactionModel transaction, ITelegramBotClient botClient, ILogger logger)
         {
+            var currentTransaction = transaction as FileReceivingTransactionModel;
             transaction.MessageIds.ForEach(async m => await botClient.DeleteMessageAsync(transaction.RecepientId, m));
             transaction.MessageIds.Clear();
 
-            if (message.Text != null)
+            if (currentTransaction.UserMessage.Text != null)
             {
-                if (message.Text == "0")
+                if (currentTransaction.UserMessage.Text == "0")
                 {
                     transaction.IsTeam = false;
                 }
-                else if (message.Text == "1")
+                else if (currentTransaction.UserMessage.Text == "1")
                 {
                     transaction.IsTeam = true;
                 }
@@ -44,12 +45,12 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 
 
                 transaction.TransactionState = new WorkTypeAsked();
-                await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
+                await transaction.TransactionState.ProcessTransactionAsync(transaction, botClient, logger);
                 return;
             }
 
             transaction.TransactionState = new FullNameAsked();
-            await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
+            await transaction.TransactionState.ProcessTransactionAsync(transaction, botClient, logger);
         }
     }
 }

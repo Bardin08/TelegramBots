@@ -1,6 +1,5 @@
 ﻿using FileReceiverBot.Common.Models;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Common.Interfaces
 {
@@ -8,6 +7,6 @@ namespace FileReceiverBot.Common.Interfaces
     {
         public string Name { get; }
 
-        public void Execute(Message message, CommandTransaction transaction, ITelegramBotClient botClient);
+        public void Execute(CommandTransactionModel transaction, ITelegramBotClient botClient);
     }
 }

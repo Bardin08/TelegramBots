@@ -8,6 +8,6 @@ namespace FileReceiverBot.Common.Interfaces
 {
     internal interface IFileReceivingTransactionState
     {
-        public Task ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient, ILogger logger);
+        public Task ProcessTransactionAsync(FileReceivingTransactionModel transaction, ITelegramBotClient botClient, ILogger logger);
     }
 }

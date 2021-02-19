@@ -9,15 +9,15 @@ using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
     internal class FileReceived : IFileReceivingTransactionState
     {
-        public async Task ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient, ILogger logger)
+        public async Task ProcessTransactionAsync(FileReceivingTransactionModel transaction, ITelegramBotClient botClient, ILogger logger)
         {
-            if (message.Document == null)
+            var currentTransaction = transaction as FileReceivingTransactionModel;
+            if (currentTransaction.UserMessage.Document == null)
             {
                 try
                 {
@@ -29,12 +29,12 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
                 }
 
                 transaction.TransactionState = new FileAsked();
-                await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
+                await transaction.TransactionState.ProcessTransactionAsync(transaction, botClient, logger);
                 return;
             }
 
-            transaction.FileInfo.Id = message.Document.FileId;
-            transaction.FileInfo.Name = message.Document.FileName;
+            transaction.FileInfo.Id = currentTransaction.UserMessage.Document.FileId;
+            transaction.FileInfo.Name = currentTransaction.UserMessage.Document.FileName;
 
             logger.LogInformation("File {fileName} received from {username}.", transaction.FileInfo.Name, transaction.Username);
 
@@ -67,7 +67,7 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
             }
         }
 
-        private async void SaveFile(FileReceivingTransaction transaction, ITelegramBotClient botClient, ILogger logger)
+        private async void SaveFile(FileReceivingTransactionModel transaction, ITelegramBotClient botClient, ILogger logger)
         {
             var fileDirectory = $"C:\\Users\\User\\Desktop\\IT01.Telegram.Bots\\Received\\Files\\{transaction.FileInfo.Label}\\{transaction.SenderFullName}";
             if (!Directory.Exists(fileDirectory))

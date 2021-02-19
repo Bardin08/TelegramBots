@@ -5,13 +5,12 @@ using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Common.Behavior.FileCheckStages
 {
     internal class FileCheckState : IFileCheckTransactionState
     {
-        public async Task ProcessTransactionAsync(Message message, FileCheckTransaction transaction, ITelegramBotClient botClient, ILogger logger)
+        public async Task ProcessTransactionAsync(FileSavedCheckTransactionModel transaction, ITelegramBotClient botClient, ILogger logger)
         {
             var directoryInfo = new DirectoryInfo($"{BotConstants.FileSavingPath}{transaction.Label}\\{transaction.FullName}");
 
@@ -29,11 +28,11 @@ namespace FileReceiverBot.Common.Behavior.FileCheckStages
 
             var sb = new StringBuilder();
 
-            sb.Append($"От {transaction.FullName} получен(-о) и сохранен(-о) {transaction.FilesInfo.Count} файл(-а/-ов).\n\n");
+            sb.Append("От ").Append(transaction.FullName).Append(" получен(-о) и сохранен(-о) ").Append(transaction.FilesInfo.Count).Append(" файл(-а/-ов).\n\n");
 
             transaction.FilesInfo.ForEach(f =>
             {
-                sb.Append("\t").Append($"• {f.Name}({f.Length} bytes) сохранен в {f.CreationTime};\n");
+                sb.Append("\t").Append("• ").Append(f.Name).Append('(').Append(f.Length).Append(" bytes) сохранен в ").Append(f.CreationTime).Append(";\n");
             });
 
             await botClient.SendTextMessageAsync(transaction.RecepientId, sb.ToString());

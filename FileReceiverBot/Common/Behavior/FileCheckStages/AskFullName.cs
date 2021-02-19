@@ -11,7 +11,7 @@ namespace FileReceiverBot.Common.Behavior.FileCheckStages
 {
     internal class AskFullName : IFileCheckTransactionState
     {
-        public async Task ProcessTransactionAsync(Message message, FileCheckTransaction transaction, ITelegramBotClient botClient, ILogger logger)
+        public async Task ProcessTransactionAsync(FileSavedCheckTransactionModel transaction, ITelegramBotClient botClient, ILogger logger)
         {
             try
             {

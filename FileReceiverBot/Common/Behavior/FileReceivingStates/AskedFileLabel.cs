@@ -15,7 +15,7 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
     class AskedFileLabel : IFileReceivingTransactionState
     {
-        public async Task ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient, ILogger logger)
+        public async Task ProcessTransactionAsync(FileReceivingTransactionModel transaction, ITelegramBotClient botClient, ILogger logger)
         {
             var buttons = new List<List<InlineKeyboardButton>>();
 

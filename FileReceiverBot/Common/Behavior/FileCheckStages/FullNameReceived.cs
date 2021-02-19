@@ -13,9 +13,10 @@ namespace FileReceiverBot.Common.Behavior.FileCheckStages
 {
     internal class FullNameReceived : IFileCheckTransactionState
     {
-        public async Task ProcessTransactionAsync(Message message, FileCheckTransaction transaction, ITelegramBotClient botClient, ILogger logger)
+        public async Task ProcessTransactionAsync(FileSavedCheckTransactionModel transaction, ITelegramBotClient botClient, ILogger logger)
         {
-            if (message.Text == null)
+            var currentTransaction = transaction as FileSavedCheckTransactionModel;
+            if (currentTransaction.UserMessage.Text == null)
             {
                 try
                 {
@@ -23,7 +24,7 @@ namespace FileReceiverBot.Common.Behavior.FileCheckStages
 
                     if (sentMessage != null)
                     {
-                        logger.LogDebug("User {username}({id}) sent incorrect file name. Message: {message}", transaction.Username, transaction.RecepientId, message);
+                        logger.LogDebug("User {username}({id}) sent incorrect file name. Message: {message}", transaction.Username, transaction.RecepientId, currentTransaction.UserMessage);
                     }
                 }
                 catch (Exception ex)
@@ -32,15 +33,15 @@ namespace FileReceiverBot.Common.Behavior.FileCheckStages
                 }
 
                 transaction.TransactionState = new AskFullName();
-                await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
+                await transaction.TransactionState.ProcessTransactionAsync(transaction, botClient, logger);
                 return;
             }
 
-            transaction.FullName = message.Text;
+            transaction.FullName = currentTransaction.UserMessage.Text;
 
             logger.LogDebug("User {username}({id}) real name received.", transaction.Username, transaction.RecepientId);
             transaction.TransactionState = new FileCheckState();
-            await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
+            await transaction.TransactionState.ProcessTransactionAsync(transaction, botClient, logger);
         }
     }
 }

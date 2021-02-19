@@ -9,7 +9,7 @@ namespace FileReceiverBot.Commands
     {
         public string Name => "/start";
 
-        public async void Execute(Message message, CommandTransaction transaction, ITelegramBotClient botClient)
+        public async void Execute(CommandTransactionModel transaction, ITelegramBotClient botClient)
         {
             await botClient.SendTextMessageAsync(transaction.RecepientId, @"Привет! Я бот получения файлов студентов группы ІТ-01.
 Через меня можно сдать свои работы.

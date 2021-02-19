@@ -6,25 +6,26 @@ using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Common.Behavior.TransactionProcessStrategies
 {
     internal class CommandProcessingStrategy : ITransactionProcessStrategy
     {
-        public async void ProcessTransaction(Message message, object transaction, ITelegramBotClient botClient, ILogger logger)
+        public async void ProcessTransaction(object transaction, ITelegramBotClient botClient, ILogger logger)
         {
-            if (message.Text == null)
+            var commandTransaction = transaction as CommandTransactionModel;
+
+            if (commandTransaction.UserMessage.Text == null)
             {
-                await botClient.SendTextMessageAsync(message.From.Id, "Ошибка распознования команды.");
+                await botClient.SendTextMessageAsync(commandTransaction.UserMessage.From.Id, "Ошибка распознования команды.");
                 return;
             }
 
             var commands = LoadCommands();
 
-            var requiredCommand = commands?.Find(c => c.Name == message.Text);
+            var requiredCommand = commands?.Find(c => c.Name == commandTransaction.UserMessage.Text);
 
-            requiredCommand?.Execute(message, transaction as CommandTransaction, botClient);
+            requiredCommand?.Execute(commandTransaction, botClient);
         }
 
         private List<IFileReceiverBotCommand> LoadCommands()

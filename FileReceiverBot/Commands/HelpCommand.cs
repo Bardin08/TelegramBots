@@ -9,7 +9,7 @@ namespace FileReceiverBot.Commands
     {
         public string Name => "/help";
 
-        public async void Execute(Message message, CommandTransaction transaction, ITelegramBotClient botClient)
+        public async void Execute(CommandTransactionModel transaction, ITelegramBotClient botClient)
         {
             await botClient.SendTextMessageAsync(transaction.RecepientId, @"🔔 Чтобы проверить, включен ли я, используй команду /ison.
 📨 Для отправки файла используй команду /send.");
