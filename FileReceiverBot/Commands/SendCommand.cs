@@ -1,20 +1,26 @@
 ﻿using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
+using FileReceiverBot.Delegates;
+
 using Telegram.Bot;
 
 namespace FileReceiverBot.Commands
 {
-    internal class SendCommand : IFileReceiverBotCommand
+    internal class SendCommand : IBotCommand
     {
-        public delegate void FileReceivingTransactionEvent(FileReceivingTransactionModel transaction);
-        public static event FileReceivingTransactionEvent TransactionInitiated;
+        public static event FileReceivingTransactionHandler TransactionInitiated;
 
         public string Name => "/send";
 
         public void Execute(CommandTransactionModel transaction, ITelegramBotClient botClient)
         {
             transaction.IsComplete = true;
-            TransactionInitiated?.Invoke(new FileReceivingTransactionModel(transaction.RecepientId) { Username = transaction.UserMessage.From.Username });
+            TransactionInitiated?.Invoke(CreateFileReceivingTranasctionModel(transaction));
+        }
+
+        private static FileReceivingTransactionModel CreateFileReceivingTranasctionModel(CommandTransactionModel commandTransaction)
+        {
+            return new FileReceivingTransactionModel(commandTransaction.RecepientId) { Username = commandTransaction.UserMessage.From.Username };
         }
     }
 }

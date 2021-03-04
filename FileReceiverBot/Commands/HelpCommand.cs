@@ -5,7 +5,7 @@ using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Commands
 {
-    internal class HelpCommand : IFileReceiverBotCommand
+    internal class HelpCommand : IBotCommand
     {
         public string Name => "/help";
 

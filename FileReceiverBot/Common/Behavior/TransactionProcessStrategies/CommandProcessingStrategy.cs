@@ -21,23 +21,21 @@ namespace FileReceiverBot.Common.Behavior.TransactionProcessStrategies
                 return;
             }
 
-            var commands = LoadCommands();
-
-            var requiredCommand = commands?.Find(c => c.Name == commandTransaction.UserMessage.Text);
+            var requiredCommand = LoadCommands()?.Find(c => c.Name == commandTransaction.UserMessage.Text);
 
             requiredCommand?.Execute(commandTransaction, botClient);
         }
 
-        private List<IFileReceiverBotCommand> LoadCommands()
+        private List<IBotCommand> LoadCommands()
         {
-            var commands = new List<IFileReceiverBotCommand>();
+            var commands = new List<IBotCommand>();
             var foundCommands = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(types => types.IsClass && !types.IsAbstract
-                && types.GetInterface("IFileReceiverBotCommand") != null).ToList();
+                && types.GetInterface("IBotCommand") != null).ToList();
 
             foreach (var command in foundCommands)
             {
-                commands.Add((IFileReceiverBotCommand)Activator.CreateInstance(command));
+                commands.Add((IBotCommand)Activator.CreateInstance(command));
             }
 
             return commands;

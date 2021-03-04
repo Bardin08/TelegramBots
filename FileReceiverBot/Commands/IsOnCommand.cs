@@ -5,7 +5,7 @@ using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Commands
 {
-    internal class IsOnCommand : IFileReceiverBotCommand
+    internal class IsOnCommand : IBotCommand
     {
         public string Name => "/ison";
 

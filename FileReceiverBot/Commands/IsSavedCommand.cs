@@ -4,7 +4,7 @@ using Telegram.Bot;
 
 namespace FileReceiverBot.Commands
 {
-    internal class IsSavedCommand : IFileReceiverBotCommand
+    internal class IsSavedCommand : IBotCommand
     {
         public delegate void FileCheckTransactionEvent(FileSavedCheckTransactionModel transaction);
         public static event FileCheckTransactionEvent FileCheckTransactionInitiated;

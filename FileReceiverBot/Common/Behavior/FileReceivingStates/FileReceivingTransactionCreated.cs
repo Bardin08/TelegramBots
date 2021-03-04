@@ -3,17 +3,17 @@ using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
-    internal class FileReceivingTransactionCreated : IFileReceivingTransactionState
+    internal class FileReceivingTransactionCreated : ITransactionState
     {
-        public async Task ProcessTransactionAsync(FileReceivingTransactionModel transaction, ITelegramBotClient botClient, ILogger logger)
+        public async Task ProcessAsync(object transaction, ITelegramBotClient botClient, ILogger logger)
         {
-            logger.LogInformation("File sending transaction initialized by {username}({id})", transaction.Username, transaction.RecepientId);
-            transaction.TransactionState = new AskedFileLabel();
-            await transaction.TransactionState.ProcessTransactionAsync(transaction, botClient, logger);
+            var currentTransaction = transaction as FileReceivingTransactionModel;
+            logger.LogInformation("File sending transaction initialized by {username}({id})", currentTransaction.Username, currentTransaction.RecepientId);
+            currentTransaction.TransactionState = new AskFileLabel();
+            await currentTransaction.TransactionState.ProcessAsync(transaction, botClient, logger);
         }
     }
 }

@@ -4,16 +4,22 @@ using System.IO;
 using System.Threading.Tasks;
 using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
+
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace FileReceiverBot.Common.Behavior.FileCheckStages
 {
-    internal class AskLabel : IFileCheckTransactionState
+    internal class AskLabel : ITransactionState
     {
-        public async Task ProcessTransactionAsync(FileSavedCheckTransactionModel transaction, ITelegramBotClient botClient, ILogger logger)
+        public async Task ProcessAsync(object transaction, ITelegramBotClient botClient, ILogger logger)
+        {
+            InlineKeyboardMarkup keyboard = GenerateKeyboard();
+            await TrySendMessage(transaction, keyboard, botClient, logger);
+        }
+
+        private InlineKeyboardMarkup GenerateKeyboard()
         {
             var buttons = new List<List<InlineKeyboardButton>>();
 
@@ -27,13 +33,14 @@ namespace FileReceiverBot.Common.Behavior.FileCheckStages
             }
 
             var keyboard = new InlineKeyboardMarkup(buttons.ToArray());
+            return keyboard;
+        }
 
+        private static async Task TrySendMessage(object transaction, InlineKeyboardMarkup keyboard, ITelegramBotClient botClient, ILogger logger)
+        {
             try
             {
-                var sentMessage = await botClient.SendTextMessageAsync(transaction.RecepientId, "🔖Выбери метку работы, которую хочешь проверить", replyMarkup: keyboard);
-
-                transaction.MessageIds.Add(sentMessage.MessageId);
-                transaction.TransactionState = new FileLabelReceived();
+                await SendMessage(transaction, keyboard, botClient);
             }
             catch (Exception ex)
             {
@@ -41,21 +48,27 @@ namespace FileReceiverBot.Common.Behavior.FileCheckStages
             }
         }
 
+        private static async Task SendMessage(object transaction, InlineKeyboardMarkup keyboard, ITelegramBotClient botClient)
+        {
+            var currentTransaction = transaction as FileSavedCheckTransactionModel;
+            var sentMessage = await botClient.SendTextMessageAsync(currentTransaction.RecepientId, "🔖Выбери метку работы, которую хочешь проверить", replyMarkup: keyboard);
+            currentTransaction.MessageIds.Add(sentMessage.MessageId);
+            currentTransaction.TransactionState = new FileLabelReceived();
+        }
+
         private List<string> LoadFileLabels()
         {
             List<string> labels = new List<string>();
 
-            using (var reader = new StreamReader(BotConstants.LabelsFileFullName, System.Text.Encoding.Unicode))
+            using var reader = new StreamReader(BotConstants.LabelsFileFullName, System.Text.Encoding.Unicode);
+            var line = "";
+
+            while ((line = reader.ReadLine()) != null)
             {
-                var line = "";
-
-                while ((line = reader.ReadLine()) != null)
-                {
-                    labels.Add(line.Split(';')[0]);
-                }
-
-                return labels;
+                labels.Add(line.Split(';')[0]);
             }
+
+            return labels;
         }
     }
 }

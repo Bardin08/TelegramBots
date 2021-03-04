@@ -4,24 +4,24 @@ using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
-    internal class FileAsked : IFileReceivingTransactionState
+    internal class FileAsked : ITransactionState
     {
-        public async Task ProcessTransactionAsync(FileReceivingTransactionModel transaction, ITelegramBotClient botClient, ILogger logger)
+        public async Task ProcessAsync(object transaction, ITelegramBotClient botClient, ILogger logger)
         {
+            var currentTransaction = transaction as FileReceivingTransactionModel;
             try
             {
-                _ = await botClient.SendTextMessageAsync(transaction.RecepientId, "Отправь мне файл, который нужно сохранить.");
+                _ = await botClient.SendTextMessageAsync(currentTransaction.RecepientId, "Отправь мне файл, который нужно сохранить.");
             }
             catch (Exception ex)
             {
                 logger.LogError("Message wasn`t sent. Error: {error}", ex.Message);
             }
 
-            transaction.TransactionState = new FileReceived();
+            currentTransaction.TransactionState = new FileReceived();
         }
     }
 }

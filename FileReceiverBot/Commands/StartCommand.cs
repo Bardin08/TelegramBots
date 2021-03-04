@@ -1,11 +1,10 @@
 ﻿using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Commands
 {
-    internal class StartCommand : IFileReceiverBotCommand
+    internal class StartCommand : IBotCommand
     {
         public string Name => "/start";
 

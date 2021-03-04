@@ -1,12 +1,11 @@
 ﻿using FileReceiverBot.Common.Models;
 using Telegram.Bot;
 
-namespace FileReceiverBot.Common.Interfaces
+namespace FileReceiverBot.Abstractions
 {
-    internal interface IFileReceiverBotCommand
+    internal interface IBotCommand
     {
         public string Name { get; }
-
         public void Execute(CommandTransactionModel transaction, ITelegramBotClient botClient);
     }
 }

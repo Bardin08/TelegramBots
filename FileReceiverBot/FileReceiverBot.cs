@@ -80,14 +80,15 @@ namespace FileReceiverBot
 
         private void MessageReceived(object sender, MessageEventArgs e)
         {
-            DeleteCompleteTransactions();
+            DeleteCompletedTransactions();
 
             ProcessMessage(e.Message);
         }
 
         private void ProcessMessage(Message message)
         {
-            _transactions.TryGetValue(new BaseTransactionModel(message.From.Id), out object userTransaction);
+            _transactions.TryGetValue(new BaseTransactionModel(message.From.Id), out object currentTransaction);
+            var userTransaction = currentTransaction as BaseTransactionModel; 
 
             if (message.Text?.StartsWith("/") == true)
             {
@@ -98,13 +99,18 @@ namespace FileReceiverBot
             }
             else if (userTransaction != null)
             {
-                _transactionsProcessor.ProcessStrategy = SelectTransactionProcessingStrategy(userTransaction as BaseTransactionModel);
+                _transactionsProcessor.ProcessStrategy = SelectTransactionProcessingStrategy(userTransaction);
+            }
+
+            if (userTransaction != null)
+            {
+                userTransaction.UserMessage = message;
             }
 
             _transactionsProcessor.Process(userTransaction, _botClient, _logger);
         }
 
-        private void DeleteCompleteTransactions()
+        private void DeleteCompletedTransactions()
         {
             _transactions.RemoveWhere(t => ((BaseTransactionModel)t).IsComplete);
         }
@@ -112,15 +118,11 @@ namespace FileReceiverBot
         private ITransactionProcessStrategy SelectTransactionProcessingStrategy(BaseTransactionModel transaction)
         {
             if (transaction.TransactionType == "FileReceiving")
-            {
                 return new FileReceivingStrategy();
-            }
-            if (transaction.TransactionType == "FileCheck")
-            {
+            else if (transaction.TransactionType == "FileCheck")
                 return new FileCheckProcessingStrategy();
-            }
 
-            return null;
+            return null;    
         }
     }
 }
