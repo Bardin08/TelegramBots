@@ -4,37 +4,37 @@ using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
-    internal class WorkTypeSelected : IFileReceivingTransactionState
+    internal class WorkTypeSelected : ITransactionState
     {
-        public async Task ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient, ILogger logger)
+        public async Task ProcessAsync(object transaction, ITelegramBotClient botClient, ILogger logger)
         {
-            transaction.MessageIds.ForEach(async m => await botClient.DeleteMessageAsync(transaction.RecepientId, m));
-            transaction.MessageIds.Clear();
+            var currentTransaction = transaction as FileReceivingTransactionModel;
+            currentTransaction.MessageIds.ForEach(async m => await botClient.DeleteMessageAsync(currentTransaction.RecepientId, m));
+            currentTransaction.MessageIds.Clear();
 
-            if (message.Text != null)
+            if (currentTransaction.UserMessage.Text != null)
             {
-                if (message.Text == "0")
+                if (currentTransaction.UserMessage.Text == "0")
                 {
-                    transaction.IsTeam = false;
+                    currentTransaction.IsTeam = false;
                 }
-                else if (message.Text == "1")
+                else if (currentTransaction.UserMessage.Text == "1")
                 {
-                    transaction.IsTeam = true;
+                    currentTransaction.IsTeam = true;
                 }
             }
             else
             {
                 try
                 {
-                    var sentMessage = await botClient.SendTextMessageAsync(transaction.RecepientId, "Ошибка распознования типа работы.");
+                    var sentMessage = await botClient.SendTextMessageAsync(currentTransaction.RecepientId, "Ошибка распознования типа работы.");
 
                     if (sentMessage != null)
                     {
-                        logger.LogDebug("User {username}({id}) sent incorrect work type.", transaction.Username, transaction.RecepientId);
+                        logger.LogDebug("User {username}({id}) sent incorrect work type.", currentTransaction.Username, currentTransaction.RecepientId);
                     }
                 }
                 catch (Exception ex)
@@ -43,13 +43,13 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
                 }
 
 
-                transaction.TransactionState = new WorkTypeAsked();
-                await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
+                currentTransaction.TransactionState = new WorkTypeAsked();
+                await currentTransaction.TransactionState.ProcessAsync(transaction, botClient, logger);
                 return;
             }
 
-            transaction.TransactionState = new FullNameAsked();
-            await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
+            currentTransaction.TransactionState = new FullNameAsked();
+            await currentTransaction.TransactionState.ProcessAsync(transaction, botClient, logger);
         }
     }
 }

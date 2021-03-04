@@ -5,11 +5,11 @@ using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Commands
 {
-    internal class IsOnCommand : IFileReceiverBotCommand
+    internal class IsOnCommand : IBotCommand
     {
         public string Name => "/ison";
 
-        public async void Execute(Message message, CommandTransaction transaction, ITelegramBotClient botClient)
+        public async void Execute(CommandTransactionModel transaction, ITelegramBotClient botClient)
         {
             await botClient.SendTextMessageAsync(transaction.RecepientId, "Бот включен");
         }

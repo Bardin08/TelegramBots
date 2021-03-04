@@ -4,11 +4,11 @@ using FileReceiverBot.Common.Interfaces;
 
 namespace FileReceiverBot.Common.Models
 {
-    internal class FileCheckTransaction : TransactionBase
+    internal class FileSavedCheckTransactionModel : BaseTransactionModel
     {
-        public FileCheckTransaction(int recepientId)
+        public FileSavedCheckTransactionModel(int recepientId)
+            : base (recepientId)
         {
-            TransactionId = RecepientId = recepientId;
             TransactionType = "FileCheck";
             FilesInfo = new List<FileInfo>();
             TransactionState = new Behavior.FileCheckStages.AskLabel();
@@ -18,6 +18,6 @@ namespace FileReceiverBot.Common.Models
         public bool IsFileExists { get; set; }
         public string FullName { get; set; }
         public List<FileInfo> FilesInfo { get; set; }
-        public IFileCheckTransactionState TransactionState { get; set; }
+        public ITransactionState TransactionState { get; set; }
     }
 }

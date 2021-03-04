@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+
 using FileReceiverBot.Commands;
 using FileReceiverBot.Common.Behavior.TransactionProcessStrategies;
 using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
+
 using Microsoft.Extensions.Logging;
+
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;
@@ -44,7 +47,7 @@ namespace FileReceiverBot
             Thread.Sleep(int.MaxValue);
         }
 
-        private void FileCheckTransactionInitiated(FileCheckTransaction transaction)
+        private void FileCheckTransactionInitiated(FileSavedCheckTransactionModel transaction)
         {
             if (transaction != null)
             {
@@ -52,10 +55,10 @@ namespace FileReceiverBot
             }
 
             _transactionsProcessor.ProcessStrategy = new FileCheckProcessingStrategy();
-            _transactionsProcessor.Process(new Message(), transaction, _botClient, _logger);
+            _transactionsProcessor.Process(transaction, _botClient, _logger);
         }
 
-        private void FileReceivingTransactionInitiated(FileReceivingTransaction transaction)
+        private void FileReceivingTransactionInitiated(FileReceivingTransactionModel transaction)
         {
             if (transaction != null)
             {
@@ -63,7 +66,7 @@ namespace FileReceiverBot
             }
 
             _transactionsProcessor.ProcessStrategy = new FileReceivingStrategy();
-            _transactionsProcessor.Process(new Message(), transaction, _botClient, _logger);
+            _transactionsProcessor.Process(transaction, _botClient, _logger);
         }
 
         private void CallbackQueryReceived(object sender, CallbackQueryEventArgs e)
@@ -77,47 +80,49 @@ namespace FileReceiverBot
 
         private void MessageReceived(object sender, MessageEventArgs e)
         {
-            DeleteCompleteTransactions();
+            DeleteCompletedTransactions();
 
             ProcessMessage(e.Message);
         }
 
         private void ProcessMessage(Message message)
         {
-            _transactions.TryGetValue(new TransactionBase() { TransactionId = message.From.Id }, out object userTransaction);
+            _transactions.TryGetValue(new BaseTransactionModel(message.From.Id), out object currentTransaction);
+            var userTransaction = currentTransaction as BaseTransactionModel; 
 
             if (message.Text?.StartsWith("/") == true)
             {
-                _transactions.RemoveWhere(t => ((TransactionBase)t).TransactionId == message.From.Id);
+                _transactions.RemoveWhere(t => ((BaseTransactionModel)t).RecepientId == message.From.Id);
 
                 _transactionsProcessor.ProcessStrategy = new CommandProcessingStrategy();
-                userTransaction = new CommandTransaction(message.From.Id);
+                userTransaction = new CommandTransactionModel(message.From.Id);
             }
             else if (userTransaction != null)
             {
-                _transactionsProcessor.ProcessStrategy = SelectTransactionProcessingStrategy(userTransaction as TransactionBase);
+                _transactionsProcessor.ProcessStrategy = SelectTransactionProcessingStrategy(userTransaction);
             }
 
-            _transactionsProcessor.Process(message, userTransaction, _botClient, _logger);
+            if (userTransaction != null)
+            {
+                userTransaction.UserMessage = message;
+            }
+
+            _transactionsProcessor.Process(userTransaction, _botClient, _logger);
         }
 
-        private void DeleteCompleteTransactions()
+        private void DeleteCompletedTransactions()
         {
-            _transactions.RemoveWhere(t => ((TransactionBase)t).IsComplete);
+            _transactions.RemoveWhere(t => ((BaseTransactionModel)t).IsComplete);
         }
 
-        private ITransactionProcessStrategy SelectTransactionProcessingStrategy(TransactionBase transaction)
+        private ITransactionProcessStrategy SelectTransactionProcessingStrategy(BaseTransactionModel transaction)
         {
             if (transaction.TransactionType == "FileReceiving")
-            {
                 return new FileReceivingStrategy();
-            }
-            if (transaction.TransactionType == "FileCheck")
-            {
+            else if (transaction.TransactionType == "FileCheck")
                 return new FileCheckProcessingStrategy();
-            }
 
-            return null;
+            return null;    
         }
     }
 }

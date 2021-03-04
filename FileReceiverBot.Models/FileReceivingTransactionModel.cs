@@ -3,21 +3,22 @@ using FileReceiverBot.Common.Behavior.FileReceivingStates;
 
 namespace FileReceiverBot.Common.Models
 {
-    internal class FileReceivingTransaction : TransactionBase
+    internal class FileReceivingTransactionModel : BaseTransactionModel
     {
-        public FileReceivingTransaction(int recepientId)
+        public FileReceivingTransactionModel(int recepientId)
+            : base(recepientId)
         {
-            RecepientId = TransactionId = recepientId;
+
             TransactionType = "FileReceiving";
-            IsTeam = false;
             TransactionState = new FileReceivingTransactionCreated();
-            FileInfo = new ReceivedFileInfo();
+            FileInfo = new ReceivedFileInfoModel();
+            IsTeam = false;
         }
 
         public bool IsTeam { get; set; }
         public string SenderFullName { get; set; }
-        public ReceivedFileInfo FileInfo { get; set; }
-        public IFileReceivingTransactionState TransactionState { get; set; }
+        public ReceivedFileInfoModel FileInfo { get; set; }
+        public ITransactionState TransactionState { get; set; }
 
         public override string ToString()
         {

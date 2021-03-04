@@ -4,23 +4,23 @@ using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
-    internal class FullNameReceived : IFileReceivingTransactionState
+    internal class FullNameReceived : ITransactionState
     {
-        public async Task ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient, ILogger logger)
+        public async Task ProcessAsync(object transaction, ITelegramBotClient botClient, ILogger logger)
         {
-            if (message.Text == null)
+            var currentTransaction = transaction as FileReceivingTransactionModel;
+            if (currentTransaction.UserMessage.Text == null)
             {
                 try
                 {
-                    var sentMessage = await botClient.SendTextMessageAsync(transaction.RecepientId, "Сообщение не распознано.");
+                    var sentMessage = await botClient.SendTextMessageAsync(currentTransaction.RecepientId, "Сообщение не распознано.");
 
                     if (sentMessage != null)
                     {
-                        logger.LogDebug("User {username}({id}) sent incorrect file name. Message: {message}", transaction.Username, transaction.RecepientId, message);
+                        logger.LogDebug("User {username}({id}) sent incorrect file name. Message: {message}", currentTransaction.Username, currentTransaction.RecepientId, currentTransaction.UserMessage);
                     }
                 }
                 catch (Exception ex)
@@ -28,16 +28,16 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
                     logger.LogError("Message wasn`t sent. Error: {error}", ex.Message);
                 }
 
-                transaction.TransactionState = new FullNameAsked();
-                await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
+                currentTransaction.TransactionState = new FullNameAsked();
+                await currentTransaction.TransactionState.ProcessAsync(transaction, botClient, logger);
                 return;
             }
 
-            transaction.SenderFullName = message.Text;
+            currentTransaction.SenderFullName = currentTransaction.UserMessage.Text;
 
-            logger.LogDebug("User {username}({id}) real name received.", transaction.Username, transaction.RecepientId);
-            transaction.TransactionState = new FileAsked();
-            await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
+            logger.LogDebug("User {username}({id}) real name received.", currentTransaction.Username, currentTransaction.RecepientId);
+            currentTransaction.TransactionState = new FileAsked();
+            await currentTransaction.TransactionState.ProcessAsync(transaction, botClient, logger);
         }
     }
 }

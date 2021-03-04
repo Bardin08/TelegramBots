@@ -9,38 +9,38 @@ using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
-    internal class FileReceived : IFileReceivingTransactionState
+    internal class FileReceived : ITransactionState
     {
-        public async Task ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient, ILogger logger)
+        public async Task ProcessAsync(object transaction, ITelegramBotClient botClient, ILogger logger)
         {
-            if (message.Document == null)
+            var currentTransaction = transaction as FileReceivingTransactionModel;
+            if (currentTransaction.UserMessage.Document == null)
             {
                 try
                 {
-                    await botClient.SendTextMessageAsync(transaction.RecepientId, "❌Сообщение не содержит документа.");
+                    await botClient.SendTextMessageAsync(currentTransaction.RecepientId, "❌Сообщение не содержит документа.");
                 }
                 catch (Exception ex)
                 {
                     logger.LogError("Message wasn`t sent. Error: {error}", ex.Message);
                 }
 
-                transaction.TransactionState = new FileAsked();
-                await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
+                currentTransaction.TransactionState = new FileAsked();
+                await currentTransaction.TransactionState.ProcessAsync(transaction, botClient, logger);
                 return;
             }
 
-            transaction.FileInfo.Id = message.Document.FileId;
-            transaction.FileInfo.Name = message.Document.FileName;
+            currentTransaction.FileInfo.Id = currentTransaction.UserMessage.Document.FileId;
+            currentTransaction.FileInfo.Name = currentTransaction.UserMessage.Document.FileName;
 
-            logger.LogInformation("File {fileName} received from {username}.", transaction.FileInfo.Name, transaction.Username);
+            logger.LogInformation("File {fileName} received from {username}.", currentTransaction.FileInfo.Name, currentTransaction.Username);
 
             try
             {
-                var fileCheckResult = CheckFileName(transaction.FileInfo.Name, transaction.FileInfo.Label);
+                var fileCheckResult = CheckFileName(currentTransaction.FileInfo.Name, currentTransaction.FileInfo.Label);
 
                 if (!fileCheckResult.CanFileBeSave)
                 {
@@ -50,24 +50,24 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 
                     fileCheckResult.Errors.ForEach(e => sb.Append("• ").Append(e).Append(";").Append("\n"));
 
-                    await botClient.SendTextMessageAsync(transaction.RecepientId, sb.ToString());
-                    await botClient.SendTextMessageAsync(transaction.RecepientId, "Переименуй файл и начни отправку заново");
+                    await botClient.SendTextMessageAsync(currentTransaction.RecepientId, sb.ToString());
+                    await botClient.SendTextMessageAsync(currentTransaction.RecepientId, "Переименуй файл и начни отправку заново");
 
-                    transaction.IsComplete = true;
+                    currentTransaction.IsComplete = true;
                 }
                 else
                 {
-                    SaveFile(transaction, botClient, logger);
+                    SaveFile(currentTransaction, botClient, logger);
                 }
             }
             catch (InternalBotErrorException ex)
             {
-                await botClient.SendTextMessageAsync(transaction.RecepientId, ex.Message);
-                transaction.IsComplete = true;
+                await botClient.SendTextMessageAsync(currentTransaction.RecepientId, ex.Message);
+                currentTransaction.IsComplete = true;
             }
         }
 
-        private async void SaveFile(FileReceivingTransaction transaction, ITelegramBotClient botClient, ILogger logger)
+        private async void SaveFile(FileReceivingTransactionModel transaction, ITelegramBotClient botClient, ILogger logger)
         {
             var fileDirectory = $"C:\\Users\\User\\Desktop\\IT01.Telegram.Bots\\Received\\Files\\{transaction.FileInfo.Label}\\{transaction.SenderFullName}";
             if (!Directory.Exists(fileDirectory))

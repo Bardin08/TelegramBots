@@ -5,15 +5,16 @@ using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 {
-    internal class WorkTypeAsked : IFileReceivingTransactionState
+    internal class WorkTypeAsked : ITransactionState
     {
-        public async Task ProcessTransactionAsync(Message message, FileReceivingTransaction transaction, ITelegramBotClient botClient, ILogger logger)
+        public async Task ProcessAsync(object transaction, ITelegramBotClient botClient, ILogger logger)
         {
+            var currentTranasaction = transaction as FileReceivingTransactionModel;
+
             var buttons = new List<List<InlineKeyboardButton>>
             {
                 new List<InlineKeyboardButton> { InlineKeyboardButton.WithCallbackData("Личная👨‍🎓", "0") },
@@ -24,15 +25,15 @@ namespace FileReceiverBot.Common.Behavior.FileReceivingStates
 
             try
             {
-                var sentMessage = await botClient.SendTextMessageAsync(transaction.RecepientId, "Отлично, теперь выбери тип работы", replyMarkup: keyboard);
+                var sentMessage = await botClient.SendTextMessageAsync(currentTranasaction.RecepientId, "Отлично, теперь выбери тип работы", replyMarkup: keyboard);
 
                 if (sentMessage != null)
                 {
-                    logger.LogDebug("The keyboard is sent to the {username}({id}) to select the type of work", transaction.Username, transaction.RecepientId);
+                    logger.LogDebug("The keyboard is sent to the {username}({id}) to select the type of work", currentTranasaction.Username, currentTranasaction.RecepientId);
                 }
 
-                transaction.MessageIds.Add(sentMessage.MessageId);
-                transaction.TransactionState = new WorkTypeSelected();
+                currentTranasaction.MessageIds.Add(sentMessage.MessageId);
+                currentTranasaction.TransactionState = new WorkTypeSelected();
             }
             catch (Exception ex)
             {

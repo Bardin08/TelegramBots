@@ -2,17 +2,16 @@
 using FileReceiverBot.Common.Models;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Common.Behavior.TransactionProcessStrategies
 {
     internal class FileReceivingStrategy : ITransactionProcessStrategy
     {
-        public void ProcessTransaction(Message message, object transaction, ITelegramBotClient botClient, ILogger logger)
+        public void ProcessTransaction(object transaction, ITelegramBotClient botClient, ILogger logger)
         {
 
-            (transaction as FileReceivingTransaction)?.TransactionState
-                .ProcessTransactionAsync(message, (FileReceivingTransaction)transaction, botClient, logger);
+            (transaction as FileReceivingTransactionModel)?.TransactionState
+                .ProcessAsync(transaction, botClient, logger);
         }
     }
 }

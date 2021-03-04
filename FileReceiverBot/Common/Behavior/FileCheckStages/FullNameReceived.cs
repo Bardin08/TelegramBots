@@ -1,46 +1,78 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+
 using FileReceiverBot.Common.Interfaces;
 using FileReceiverBot.Common.Models;
+
 using Microsoft.Extensions.Logging;
+
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace FileReceiverBot.Common.Behavior.FileCheckStages
 {
-    internal class FullNameReceived : IFileCheckTransactionState
+    internal class FullNameReceived : ITransactionState
     {
-        public async Task ProcessTransactionAsync(Message message, FileCheckTransaction transaction, ITelegramBotClient botClient, ILogger logger)
+        public async Task ProcessAsync(object transaction, ITelegramBotClient botClient, ILogger logger)
         {
-            if (message.Text == null)
+            var currentTransaction = transaction as FileSavedCheckTransactionModel;
+            if (currentTransaction.UserMessage.Text == null)
             {
-                try
-                {
-                    var sentMessage = await botClient.SendTextMessageAsync(transaction.RecepientId, "Сообщение не распознано.");
-
-                    if (sentMessage != null)
-                    {
-                        logger.LogDebug("User {username}({id}) sent incorrect file name. Message: {message}", transaction.Username, transaction.RecepientId, message);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError("Message wasn`t sent. Error: {error}", ex.Message);
-                }
-
-                transaction.TransactionState = new AskFullName();
-                await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
+                await HandleValidationError(transaction, botClient, logger);
+                await MoveToPreviousState(transaction, botClient, logger, currentTransaction);
                 return;
             }
 
-            transaction.FullName = message.Text;
+            ProcessTransaction(logger, currentTransaction);
+            await MoveToNextState(transaction, botClient, logger, currentTransaction);
+        }
 
-            logger.LogDebug("User {username}({id}) real name received.", transaction.Username, transaction.RecepientId);
-            transaction.TransactionState = new FileCheckState();
-            await transaction.TransactionState.ProcessTransactionAsync(message, transaction, botClient, logger);
+        private async Task HandleValidationError(object transaction, ITelegramBotClient botClient, ILogger logger)
+        {
+            MessageModel messageModel = new MessageModel()
+            {
+                Transaction = transaction,
+                TextMessage = "Сообщение не распознано."
+            };
+            await TrySendMessage(messageModel, botClient, logger);
+        }
+
+        private static void ProcessTransaction(ILogger logger, FileSavedCheckTransactionModel currentTransaction)
+        {
+            currentTransaction.FullName = currentTransaction.UserMessage.Text;
+            logger.LogDebug("User {username}({id}) real name received.", currentTransaction.Username, currentTransaction.RecepientId);
+        }
+
+        private static async Task MoveToNextState(object transaction, ITelegramBotClient botClient, ILogger logger, FileSavedCheckTransactionModel currentTransaction)
+        {
+            currentTransaction.TransactionState = new CheckFile();
+            await currentTransaction.TransactionState.ProcessAsync(transaction, botClient, logger);
+        }
+
+        private static async Task MoveToPreviousState(object transaction, ITelegramBotClient botClient, ILogger logger, FileSavedCheckTransactionModel currentTransaction)
+        {
+            currentTransaction.TransactionState = new AskFullName();
+            await currentTransaction.TransactionState.ProcessAsync(transaction, botClient, logger);
+        }
+
+        private async Task TrySendMessage(MessageModel messageModel, ITelegramBotClient botClient, ILogger logger)
+        {
+            try
+            {
+                await SendMessage(messageModel, botClient);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Message wasn`t sent. Error: {error}", ex.Message);
+            }
+        }
+
+        private async Task SendMessage(MessageModel messageModel, ITelegramBotClient botClient)
+        {
+            var currentTransaction = messageModel.Transaction as FileSavedCheckTransactionModel;
+
+            await botClient.SendTextMessageAsync(currentTransaction.RecepientId,
+                messageModel.TextMessage,
+                replyMarkup: messageModel.Keyboard);
         }
     }
 }
